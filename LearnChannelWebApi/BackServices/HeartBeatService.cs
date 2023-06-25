@@ -11,41 +11,46 @@
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            while (!stoppingToken.IsCancellationRequested)
+            try
             {
-                try
+
+                Task.Factory.StartNew(() =>
                 {
-                    if(heartBeatsChannel .IsHasContent)
+                    while (!stoppingToken.IsCancellationRequested)
                     {
-                        Console.WriteLine("sss");
-                        Task.Factory.StartNew(() =>
-                        {
-                            Process(heartBeatsChannel).Wait();
-                        }, TaskCreationOptions.LongRunning);
-                        
+                        //阻塞的队列使得一直在同一个线程运行
+                        Process(15,heartBeatsChannel).Wait();
                     }
-                    await Task.Delay(3000, stoppingToken);
+
+                }, TaskCreationOptions.LongRunning);
+
+                Console.WriteLine("主线程 现在运行的线程id为：" + Thread.CurrentThread.ManagedThreadId);
+
                 }
-                catch(Exception ex)
-                {
-                    Console.WriteLine(ex.ToString());
-                }
-                
-                
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
             }
         }
+
+
         /// <summary>
         /// 消费数据
         /// </summary>
+        /// <param name="count">一次消费数量</param>
         /// <param name="heartBeatsChannel"></param>
         /// <returns></returns>
-        private async Task Process(HeartBeatsChannel heartBeatsChannel)
+        private async Task Process(int count ,HeartBeatsChannel heartBeatsChannel)
         {
+            Console.WriteLine("子线程_现在运行的线程id为：" + Thread.CurrentThread.ManagedThreadId);
             //每次消费三十个
-            int count = 30;
-            //进行消费
-            await heartBeatsChannel.ConsumeHeartBeatAsync(count, TimeSpan.FromSeconds(3));
-
+            if (heartBeatsChannel.IsHasContent)
+            {
+                //int count = 15;
+                //进行消费
+                await heartBeatsChannel.ConsumeHeartBeatAsync(count, TimeSpan.FromSeconds(3));
+            }           
+            await Task.Delay(3000);
         }
     }
 }
