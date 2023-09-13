@@ -2,7 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 
 namespace LearnChannelWebApi.Controllers
-{
+{   
+    
     [Route("api/[controller]/[action]")]
     [ApiController]
     public class TwoHeartBeatChannelController : ControllerBase
@@ -13,6 +14,7 @@ namespace LearnChannelWebApi.Controllers
         {
             this.heartBeatsChannel = heartBeatsChannel;
         }
+        //不同的请求增加消息
         [HttpGet]
         public async Task TwoProduceHeartBeatAsync(int count)
         {
@@ -31,14 +33,11 @@ namespace LearnChannelWebApi.Controllers
         [HttpGet]
         public async Task ConsumeHeartBeatAsync(int count)
         {
+            //开启多个消费者进行处理查看数据是否正确
             var task1 = heartBeatsChannel.ConsumeHeartBeatAsync(count, TimeSpan.FromSeconds(10));
             var task2 = heartBeatsChannel.ConsumeHeartBeatAsync(count, TimeSpan.FromSeconds(10));
             //var task3 = heartBeatsChannel.ConsumeHeartBeatAsync(count, TimeSpan.FromSeconds(10));
             await Task.WhenAll(task1, task2);
-            /*foreach(var item in list)
-            {   
-                Console.WriteLine(item);
-            }*/
 
         }
     }

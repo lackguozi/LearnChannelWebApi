@@ -43,10 +43,9 @@
         private async Task Process(int count ,HeartBeatsChannel heartBeatsChannel)
         {
             Console.WriteLine("子线程_现在运行的线程id为：" + Thread.CurrentThread.ManagedThreadId);
-            //每次消费三十个
+            //每次消费count个
             if (heartBeatsChannel.IsHasContent)
             {
-                //int count = 15;
                 //进行消费
                 await heartBeatsChannel.ConsumeHeartBeatAsync(count, TimeSpan.FromSeconds(3));
             }           

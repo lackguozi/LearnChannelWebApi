@@ -80,17 +80,7 @@ namespace LearnChannelWebApi
             var cancellationToken = cts.Token;
             cts.CancelAfter(timeSpan);
             int rcount = 0;
-            /* while (true)
-             {
-                 await foreach (var locator in channel.Reader.ReadAllAsync(cancellationToken))
-                 {
-                     chuck.Locators.Add(locator);
-                     if (chuck.Locators.Count >= count)
-                     {
-                         break;
-                     }
-                 }
-             }*/
+           //时间到了或者消费个数到了停止消费
             while ( !cancellationToken.IsCancellationRequested && rcount<count)
             {
                 //await Task.Delay(2000);
@@ -100,7 +90,7 @@ namespace LearnChannelWebApi
                     result.Add(number);
                     rcount++;
                 }
-                else
+                else //没有数据了直接退出
                 {
                     break;
                 }

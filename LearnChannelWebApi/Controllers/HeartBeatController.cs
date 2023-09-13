@@ -17,6 +17,7 @@ namespace LearnChannelWebApi.Controllers
         [HttpGet]
         public async Task ProduceHeartBeatAsync(int count)
         {
+            //生产数据
             int rcount = 0;
             while(rcount < count)
             {
@@ -32,15 +33,11 @@ namespace LearnChannelWebApi.Controllers
         [HttpGet]
         public async Task ConsumeHeartBeatAsync(int count)
         {
+            //多个任务消费数据
             var task1 =  heartBeatsChannel.ConsumeHeartBeatAsync(count,TimeSpan.FromSeconds(10));
             var  task2 = heartBeatsChannel.ConsumeHeartBeatAsync(count, TimeSpan.FromSeconds(10));
             var task3 = heartBeatsChannel.ConsumeHeartBeatAsync(count, TimeSpan.FromSeconds(10));
             await Task.WhenAll(task1, task2, task3);
-            /*foreach(var item in list)
-            {   
-                Console.WriteLine(item);
-            }*/
-
         }
     }
 }
